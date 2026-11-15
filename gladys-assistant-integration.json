@@ -1,0 +1,1305 @@
+{
+  "manifest_version": 1,
+  "type": "communication",
+  "name": "Mailgun",
+  "description": {
+    "en": "Send Gladys notifications by email with Mailgun, and react to delivery events.",
+    "fr": "Envoyez les notifications Gladys par e-mail avec Mailgun et réagissez aux livraisons.",
+    "de": "Sende Gladys-Benachrichtigungen per E-Mail mit Mailgun und reagiere auf Zustellungen.",
+    "es": "Envíe las notificaciones de Gladys por correo con Mailgun y reaccione a las entregas."
+  },
+  "version": "0.0.0",
+  "docker_image": "ghcr.io/prohand/gladys-mailgun:0.0.0",
+  "gladys_version": ">=5.3.0",
+  "cover_image": "https://raw.githubusercontent.com/prohand/gladys-mailgun/main/cover.png",
+  "categories": ["notifications", "services"],
+  "keywords": [
+    "mailgun",
+    "email",
+    "e-mail",
+    "courriel",
+    "correo",
+    "smtp",
+    "sinch",
+    "transactional email",
+    "mail"
+  ],
+  "transports": ["cloud"],
+  "messaging": {
+    "receive": false
+  },
+  "contact_schema": [
+    {
+      "key": "email",
+      "type": "string",
+      "label": {
+        "en": "My email address",
+        "fr": "Mon adresse e-mail",
+        "de": "Meine E-Mail-Adresse",
+        "es": "Mi dirección de correo"
+      },
+      "description": {
+        "en": "Gladys sends your notifications to this address.",
+        "fr": "Gladys envoie vos notifications à cette adresse.",
+        "de": "Gladys sendet deine Benachrichtigungen an diese Adresse.",
+        "es": "Gladys envía sus notificaciones a esta dirección."
+      },
+      "placeholder": {
+        "en": "you@example.com",
+        "fr": "vous@exemple.fr",
+        "de": "du@beispiel.de",
+        "es": "usted@ejemplo.es"
+      },
+      "required": true
+    }
+  ],
+  "config_schema": [
+    {
+      "key": "intro",
+      "type": "section",
+      "label": {
+        "en": "Getting started",
+        "fr": "Pour commencer",
+        "de": "Erste Schritte",
+        "es": "Primeros pasos"
+      },
+      "description": {
+        "en": "You need a Mailgun account and a sending domain. In Mailgun, create a sending API key (Domain settings, Sending keys) or use your private API key, and check the region of your account (US or EU). Then each Gladys user enters their own email address in the \"My account\" block below.",
+        "fr": "Il vous faut un compte Mailgun et un domaine d'envoi. Dans Mailgun, créez une clé d'envoi (Domain settings, Sending keys) ou utilisez votre clé d'API privée, et vérifiez la région de votre compte (US ou UE). Ensuite, chaque utilisateur Gladys saisit sa propre adresse e-mail dans le bloc « Mon compte » ci-dessous.",
+        "de": "Du brauchst ein Mailgun-Konto und eine Versanddomain. Erstelle in Mailgun einen Sendeschlüssel (Domain settings, Sending keys) oder nutze deinen privaten API-Schlüssel und prüfe die Region deines Kontos (US oder EU). Danach gibt jeder Gladys-Benutzer seine eigene E-Mail-Adresse im Block „Mein Konto“ unten ein.",
+        "es": "Necesita una cuenta de Mailgun y un dominio de envío. En Mailgun, cree una clave de envío (Domain settings, Sending keys) o use su clave de API privada, y compruebe la región de su cuenta (EE. UU. o UE). Después, cada usuario de Gladys indica su propia dirección de correo en el bloque «Mi cuenta» de abajo."
+      },
+      "links": [
+        {
+          "url": "https://app.mailgun.com/",
+          "label": {
+            "en": "Mailgun dashboard",
+            "fr": "Tableau de bord Mailgun",
+            "de": "Mailgun-Dashboard",
+            "es": "Panel de Mailgun"
+          }
+        },
+        {
+          "url": "https://github.com/prohand/gladys-mailgun/blob/main/docs/en.md",
+          "label": {
+            "en": "Integration documentation",
+            "fr": "Documentation de l'intégration",
+            "de": "Dokumentation der Integration",
+            "es": "Documentación de la integración"
+          }
+        }
+      ]
+    },
+    {
+      "key": "api_key",
+      "type": "secret",
+      "label": {
+        "en": "Mailgun API key",
+        "fr": "Clé d'API Mailgun",
+        "de": "Mailgun-API-Schlüssel",
+        "es": "Clave de API de Mailgun"
+      },
+      "description": {
+        "en": "A domain sending key is enough to send. The statistics of the widget and the automatic webhook setup need the private API key.",
+        "fr": "Une clé d'envoi du domaine suffit pour envoyer. Les statistiques du widget et l'inscription automatique des webhooks demandent la clé d'API privée.",
+        "de": "Ein Sendeschlüssel der Domain reicht zum Senden. Die Statistiken des Widgets und die automatische Webhook-Einrichtung brauchen den privaten API-Schlüssel.",
+        "es": "Una clave de envío del dominio basta para enviar. Las estadísticas del widget y el registro automático de webhooks necesitan la clave de API privada."
+      },
+      "required": true
+    },
+    {
+      "key": "domain",
+      "type": "string",
+      "label": {
+        "en": "Sending domain",
+        "fr": "Domaine d'envoi",
+        "de": "Versanddomain",
+        "es": "Dominio de envío"
+      },
+      "description": {
+        "en": "The domain as listed in Mailgun, e.g. mg.example.com (or your sandbox domain).",
+        "fr": "Le domaine tel que listé dans Mailgun, par exemple mg.exemple.fr (ou votre domaine sandbox).",
+        "de": "Die Domain, wie sie in Mailgun steht, z. B. mg.beispiel.de (oder deine Sandbox-Domain).",
+        "es": "El dominio tal como aparece en Mailgun, p. ej. mg.ejemplo.es (o su dominio sandbox)."
+      },
+      "placeholder": {
+        "en": "mg.example.com",
+        "fr": "mg.exemple.fr",
+        "de": "mg.beispiel.de",
+        "es": "mg.ejemplo.es"
+      },
+      "required": true
+    },
+    {
+      "key": "region",
+      "type": "select",
+      "label": {
+        "en": "Account region",
+        "fr": "Région du compte",
+        "de": "Region des Kontos",
+        "es": "Región de la cuenta"
+      },
+      "description": {
+        "en": "Where Mailgun stores your account. A domain created in the EU region is unknown to the US API, and the other way round.",
+        "fr": "Où Mailgun héberge votre compte. Un domaine créé dans la région UE est inconnu de l'API US, et inversement.",
+        "de": "Wo Mailgun dein Konto speichert. Eine in der EU-Region erstellte Domain ist der US-API unbekannt und umgekehrt.",
+        "es": "Dónde guarda Mailgun su cuenta. Un dominio creado en la región UE es desconocido para la API de EE. UU., y al revés."
+      },
+      "required": false,
+      "default": "us",
+      "options": [
+        {
+          "value": "us",
+          "label": {
+            "en": "United States (api.mailgun.net)",
+            "fr": "États-Unis (api.mailgun.net)",
+            "de": "USA (api.mailgun.net)",
+            "es": "EE. UU. (api.mailgun.net)"
+          }
+        },
+        {
+          "value": "eu",
+          "label": {
+            "en": "Europe (api.eu.mailgun.net)",
+            "fr": "Europe (api.eu.mailgun.net)",
+            "de": "Europa (api.eu.mailgun.net)",
+            "es": "Europa (api.eu.mailgun.net)"
+          }
+        }
+      ]
+    },
+    {
+      "key": "sender_name",
+      "type": "string",
+      "label": {
+        "en": "Sender name",
+        "fr": "Nom de l'expéditeur",
+        "de": "Absendername",
+        "es": "Nombre del remitente"
+      },
+      "required": false,
+      "default": "Gladys"
+    },
+    {
+      "key": "sender_address",
+      "type": "string",
+      "label": {
+        "en": "Sender address",
+        "fr": "Adresse de l'expéditeur",
+        "de": "Absenderadresse",
+        "es": "Dirección del remitente"
+      },
+      "description": {
+        "en": "An address of the sending domain. Leave empty for gladys@<your domain>.",
+        "fr": "Une adresse du domaine d'envoi. Laissez vide pour gladys@<votre domaine>.",
+        "de": "Eine Adresse der Versanddomain. Leer lassen für gladys@<deine Domain>.",
+        "es": "Una dirección del dominio de envío. Déjelo vacío para gladys@<su dominio>."
+      },
+      "placeholder": {
+        "en": "gladys@mg.example.com",
+        "fr": "gladys@mg.exemple.fr",
+        "de": "gladys@mg.beispiel.de",
+        "es": "gladys@mg.ejemplo.es"
+      },
+      "required": false
+    },
+    {
+      "key": "notification_subject",
+      "type": "string",
+      "label": {
+        "en": "Subject of notifications",
+        "fr": "Objet des notifications",
+        "de": "Betreff der Benachrichtigungen",
+        "es": "Asunto de las notificaciones"
+      },
+      "description": {
+        "en": "Subject of the emails Gladys sends as notifications (scenes choose their own).",
+        "fr": "Objet des e-mails que Gladys envoie comme notifications (les scènes choisissent le leur).",
+        "de": "Betreff der E-Mails, die Gladys als Benachrichtigungen sendet (Szenen wählen ihren eigenen).",
+        "es": "Asunto de los correos que Gladys envía como notificaciones (las escenas eligen el suyo)."
+      },
+      "required": false,
+      "default": "Gladys"
+    },
+    {
+      "key": "html_format",
+      "type": "boolean",
+      "label": {
+        "en": "Also send an HTML version",
+        "fr": "Envoyer aussi une version HTML",
+        "de": "Auch eine HTML-Version senden",
+        "es": "Enviar también una versión HTML"
+      },
+      "description": {
+        "en": "Clickable links and the camera image shown in the email. Off: plain text only.",
+        "fr": "Liens cliquables et image de caméra affichée dans l'e-mail. Désactivé : texte brut uniquement.",
+        "de": "Klickbare Links und das Kamerabild in der E-Mail. Aus: nur reiner Text.",
+        "es": "Enlaces que se pueden pulsar y la imagen de la cámara en el correo. Desactivado: solo texto."
+      },
+      "required": false,
+      "default": true
+    },
+    {
+      "key": "max_emails_per_hour",
+      "type": "number",
+      "label": {
+        "en": "Sending cap (emails per hour)",
+        "fr": "Limite d'envoi (e-mails par heure)",
+        "de": "Versandlimit (E-Mails pro Stunde)",
+        "es": "Límite de envío (correos por hora)"
+      },
+      "description": {
+        "en": "Protects your Mailgun account from a scene that loops: past this number, emails are refused until the hour has passed.",
+        "fr": "Protège votre compte Mailgun d'une scène qui boucle : au-delà de ce nombre, les e-mails sont refusés jusqu'à ce que l'heure soit passée.",
+        "de": "Schützt dein Mailgun-Konto vor einer Szene in einer Schleife: Über dieser Zahl werden E-Mails abgelehnt, bis die Stunde vorbei ist.",
+        "es": "Protege su cuenta de Mailgun de una escena en bucle: por encima de este número, los correos se rechazan hasta que pase la hora."
+      },
+      "required": false,
+      "default": 60,
+      "min": 1,
+      "max": 1000
+    },
+    {
+      "key": "webhooks_intro",
+      "type": "section",
+      "label": {
+        "en": "Mailgun events (optional)",
+        "fr": "Événements Mailgun (facultatif)",
+        "de": "Mailgun-Ereignisse (optional)",
+        "es": "Eventos de Mailgun (opcional)"
+      },
+      "description": {
+        "en": "To start scenes when an email is delivered, fails, is opened or clicked, Mailgun must reach Gladys: that goes through Gladys Plus. Paste your Gladys Plus Open API key in the \"Gladys Plus webhooks\" block, and the integration registers its URL in Mailgun by itself. Then copy the \"HTTP webhook signing key\" from Mailgun (Webhooks page) below, so that only Mailgun can start your scenes.",
+        "fr": "Pour lancer des scènes quand un e-mail est délivré, échoue, est ouvert ou cliqué, Mailgun doit pouvoir joindre Gladys : cela passe par Gladys Plus. Collez votre clé Open API Gladys Plus dans le bloc « Webhooks Gladys Plus », et l'intégration inscrit son URL dans Mailgun toute seule. Copiez ensuite ci-dessous la « HTTP webhook signing key » de Mailgun (page Webhooks), pour que seul Mailgun puisse lancer vos scènes.",
+        "de": "Um Szenen zu starten, wenn eine E-Mail zugestellt wird, fehlschlägt, geöffnet oder geklickt wird, muss Mailgun Gladys erreichen: Das läuft über Gladys Plus. Füge deinen Gladys-Plus-Open-API-Schlüssel im Block „Gladys-Plus-Webhooks“ ein, und die Integration trägt ihre URL selbst in Mailgun ein. Kopiere dann den „HTTP webhook signing key“ aus Mailgun (Seite Webhooks) unten hinein, damit nur Mailgun deine Szenen starten kann.",
+        "es": "Para iniciar escenas cuando un correo se entrega, falla, se abre o se pulsa, Mailgun debe poder llegar a Gladys: eso pasa por Gladys Plus. Pegue su clave Open API de Gladys Plus en el bloque «Webhooks de Gladys Plus» y la integración registra su URL en Mailgun por sí sola. Después copie abajo la «HTTP webhook signing key» de Mailgun (página Webhooks), para que solo Mailgun pueda iniciar sus escenas."
+      },
+      "links": [
+        {
+          "url": "https://app.mailgun.com/mg/sending/webhooks",
+          "label": {
+            "en": "Mailgun webhooks",
+            "fr": "Webhooks Mailgun",
+            "de": "Mailgun-Webhooks",
+            "es": "Webhooks de Mailgun"
+          }
+        }
+      ]
+    },
+    {
+      "key": "auto_register_webhooks",
+      "type": "boolean",
+      "label": {
+        "en": "Register the webhooks in Mailgun automatically",
+        "fr": "Inscrire les webhooks dans Mailgun automatiquement",
+        "de": "Webhooks automatisch in Mailgun eintragen",
+        "es": "Registrar los webhooks en Mailgun automáticamente"
+      },
+      "description": {
+        "en": "Adds the Gladys Plus URL to the Mailgun webhooks of the domain, next to the URLs already there (needs the private API key).",
+        "fr": "Ajoute l'URL Gladys Plus aux webhooks Mailgun du domaine, à côté des URL déjà présentes (demande la clé d'API privée).",
+        "de": "Fügt die Gladys-Plus-URL zu den Mailgun-Webhooks der Domain hinzu, neben die bereits vorhandenen URLs (braucht den privaten API-Schlüssel).",
+        "es": "Añade la URL de Gladys Plus a los webhooks de Mailgun del dominio, junto a las URL ya presentes (necesita la clave de API privada)."
+      },
+      "required": false,
+      "default": true
+    },
+    {
+      "key": "webhook_signing_key",
+      "type": "secret",
+      "label": {
+        "en": "HTTP webhook signing key",
+        "fr": "Clé de signature des webhooks",
+        "de": "Webhook-Signaturschlüssel",
+        "es": "Clave de firma de los webhooks"
+      },
+      "description": {
+        "en": "From the Webhooks page of Mailgun. With it, events not signed by Mailgun are refused. Strongly advised.",
+        "fr": "Depuis la page Webhooks de Mailgun. Avec elle, les événements non signés par Mailgun sont refusés. Fortement conseillé.",
+        "de": "Von der Webhooks-Seite in Mailgun. Damit werden nicht von Mailgun signierte Ereignisse abgelehnt. Dringend empfohlen.",
+        "es": "Desde la página Webhooks de Mailgun. Con ella, los eventos no firmados por Mailgun se rechazan. Muy recomendable."
+      },
+      "required": false
+    }
+  ],
+  "actions": [
+    {
+      "key": "test_connection",
+      "label": {
+        "en": "Test the connection",
+        "fr": "Tester la connexion",
+        "de": "Verbindung testen",
+        "es": "Probar la conexión"
+      },
+      "timeout_seconds": 30
+    },
+    {
+      "key": "send_test_email",
+      "label": {
+        "en": "Send a test email",
+        "fr": "Envoyer un e-mail de test",
+        "de": "Test-E-Mail senden",
+        "es": "Enviar un correo de prueba"
+      },
+      "timeout_seconds": 30,
+      "fields": [
+        {
+          "key": "to",
+          "type": "string",
+          "label": {
+            "en": "Recipient",
+            "fr": "Destinataire",
+            "de": "Empfänger",
+            "es": "Destinatario"
+          },
+          "placeholder": {
+            "en": "you@example.com",
+            "fr": "vous@exemple.fr",
+            "de": "du@beispiel.de",
+            "es": "usted@ejemplo.es"
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "key": "register_webhooks",
+      "label": {
+        "en": "Register the Mailgun webhooks",
+        "fr": "Inscrire les webhooks Mailgun",
+        "de": "Mailgun-Webhooks eintragen",
+        "es": "Registrar los webhooks de Mailgun"
+      },
+      "timeout_seconds": 60
+    }
+  ],
+  "webhooks": [
+    {
+      "key": "events",
+      "label": {
+        "en": "Mailgun events",
+        "fr": "Événements Mailgun",
+        "de": "Mailgun-Ereignisse",
+        "es": "Eventos de Mailgun"
+      },
+      "mode": "fire_and_forget"
+    }
+  ],
+  "scene_triggers": [
+    {
+      "key": "email_delivered",
+      "label": {
+        "en": "An email is delivered",
+        "fr": "Un e-mail est délivré",
+        "de": "Eine E-Mail wird zugestellt",
+        "es": "Se entrega un correo"
+      },
+      "description": {
+        "en": "Mailgun handed an email to the recipient's mail server.",
+        "fr": "Mailgun a remis un e-mail au serveur de messagerie du destinataire.",
+        "de": "Mailgun hat eine E-Mail an den Mailserver des Empfängers übergeben.",
+        "es": "Mailgun entregó un correo al servidor de correo del destinatario."
+      },
+      "fields": [
+        {
+          "key": "recipient",
+          "type": "string",
+          "label": {
+            "en": "Recipient",
+            "fr": "Destinataire",
+            "de": "Empfänger",
+            "es": "Destinatario"
+          },
+          "description": {
+            "en": "Only this address. Leave empty for any recipient.",
+            "fr": "Uniquement cette adresse. Laissez vide pour tous les destinataires.",
+            "de": "Nur diese Adresse. Leer lassen für alle Empfänger.",
+            "es": "Solo esta dirección. Déjelo vacío para cualquier destinatario."
+          },
+          "placeholder": {
+            "en": "you@example.com",
+            "fr": "vous@exemple.fr",
+            "de": "du@beispiel.de",
+            "es": "usted@ejemplo.es"
+          }
+        },
+        {
+          "key": "tag",
+          "type": "string",
+          "label": {
+            "en": "Tag",
+            "fr": "Étiquette",
+            "de": "Tag",
+            "es": "Etiqueta"
+          },
+          "description": {
+            "en": "Only emails carrying this Mailgun tag (the first one). Leave empty for any.",
+            "fr": "Uniquement les e-mails portant cette étiquette Mailgun (la première). Laissez vide pour tous.",
+            "de": "Nur E-Mails mit diesem Mailgun-Tag (dem ersten). Leer lassen für alle.",
+            "es": "Solo los correos con esta etiqueta de Mailgun (la primera). Déjelo vacío para todos."
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "recipient",
+          "type": "string",
+          "label": {
+            "en": "Recipient",
+            "fr": "Destinataire",
+            "de": "Empfänger",
+            "es": "Destinatario"
+          }
+        },
+        {
+          "key": "subject",
+          "type": "string",
+          "label": {
+            "en": "Subject",
+            "fr": "Objet",
+            "de": "Betreff",
+            "es": "Asunto"
+          }
+        },
+        {
+          "key": "tag",
+          "type": "string",
+          "label": {
+            "en": "Tag",
+            "fr": "Étiquette",
+            "de": "Tag",
+            "es": "Etiqueta"
+          }
+        },
+        {
+          "key": "message_id",
+          "type": "string",
+          "label": {
+            "en": "Message ID",
+            "fr": "ID du message",
+            "de": "Nachrichten-ID",
+            "es": "ID del mensaje"
+          }
+        }
+      ]
+    },
+    {
+      "key": "email_failed",
+      "label": {
+        "en": "An email fails",
+        "fr": "Un e-mail échoue",
+        "de": "Eine E-Mail schlägt fehl",
+        "es": "Falla un correo"
+      },
+      "description": {
+        "en": "Mailgun could not deliver an email: for good (permanent) or for now (temporary, it will retry).",
+        "fr": "Mailgun n'a pas pu délivrer un e-mail : définitivement (permanent) ou pour l'instant (temporaire, il réessaiera).",
+        "de": "Mailgun konnte eine E-Mail nicht zustellen: endgültig (dauerhaft) oder vorerst (vorübergehend, es versucht es erneut).",
+        "es": "Mailgun no pudo entregar un correo: definitivamente (permanente) o por ahora (temporal, lo reintentará)."
+      },
+      "fields": [
+        {
+          "key": "recipient",
+          "type": "string",
+          "label": {
+            "en": "Recipient",
+            "fr": "Destinataire",
+            "de": "Empfänger",
+            "es": "Destinatario"
+          },
+          "description": {
+            "en": "Only this address. Leave empty for any recipient.",
+            "fr": "Uniquement cette adresse. Laissez vide pour tous les destinataires.",
+            "de": "Nur diese Adresse. Leer lassen für alle Empfänger.",
+            "es": "Solo esta dirección. Déjelo vacío para cualquier destinatario."
+          },
+          "placeholder": {
+            "en": "you@example.com",
+            "fr": "vous@exemple.fr",
+            "de": "du@beispiel.de",
+            "es": "usted@ejemplo.es"
+          }
+        },
+        {
+          "key": "severity",
+          "type": "multi_select",
+          "label": {
+            "en": "Kind of failure",
+            "fr": "Type d'échec",
+            "de": "Art des Fehlers",
+            "es": "Tipo de fallo"
+          },
+          "options": [
+            {
+              "value": "permanent",
+              "label": {
+                "en": "Permanent",
+                "fr": "Permanent",
+                "de": "Dauerhaft",
+                "es": "Permanente"
+              }
+            },
+            {
+              "value": "temporary",
+              "label": {
+                "en": "Temporary",
+                "fr": "Temporaire",
+                "de": "Vorübergehend",
+                "es": "Temporal"
+              }
+            }
+          ]
+        },
+        {
+          "key": "tag",
+          "type": "string",
+          "label": {
+            "en": "Tag",
+            "fr": "Étiquette",
+            "de": "Tag",
+            "es": "Etiqueta"
+          },
+          "description": {
+            "en": "Only emails carrying this Mailgun tag (the first one). Leave empty for any.",
+            "fr": "Uniquement les e-mails portant cette étiquette Mailgun (la première). Laissez vide pour tous.",
+            "de": "Nur E-Mails mit diesem Mailgun-Tag (dem ersten). Leer lassen für alle.",
+            "es": "Solo los correos con esta etiqueta de Mailgun (la primera). Déjelo vacío para todos."
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "recipient",
+          "type": "string",
+          "label": {
+            "en": "Recipient",
+            "fr": "Destinataire",
+            "de": "Empfänger",
+            "es": "Destinatario"
+          }
+        },
+        {
+          "key": "subject",
+          "type": "string",
+          "label": {
+            "en": "Subject",
+            "fr": "Objet",
+            "de": "Betreff",
+            "es": "Asunto"
+          }
+        },
+        {
+          "key": "tag",
+          "type": "string",
+          "label": {
+            "en": "Tag",
+            "fr": "Étiquette",
+            "de": "Tag",
+            "es": "Etiqueta"
+          }
+        },
+        {
+          "key": "message_id",
+          "type": "string",
+          "label": {
+            "en": "Message ID",
+            "fr": "ID du message",
+            "de": "Nachrichten-ID",
+            "es": "ID del mensaje"
+          }
+        },
+        {
+          "key": "severity",
+          "type": "string",
+          "label": {
+            "en": "Kind of failure",
+            "fr": "Type d'échec",
+            "de": "Art des Fehlers",
+            "es": "Tipo de fallo"
+          }
+        },
+        {
+          "key": "reason",
+          "type": "string",
+          "label": {
+            "en": "Reason",
+            "fr": "Raison",
+            "de": "Grund",
+            "es": "Motivo"
+          }
+        }
+      ]
+    },
+    {
+      "key": "email_opened",
+      "label": {
+        "en": "An email is opened",
+        "fr": "Un e-mail est ouvert",
+        "de": "Eine E-Mail wird geöffnet",
+        "es": "Se abre un correo"
+      },
+      "description": {
+        "en": "The recipient opened an email (needs open tracking on the domain).",
+        "fr": "Le destinataire a ouvert un e-mail (demande le suivi des ouvertures sur le domaine).",
+        "de": "Der Empfänger hat eine E-Mail geöffnet (braucht das Öffnungs-Tracking der Domain).",
+        "es": "El destinatario abrió un correo (necesita el seguimiento de aperturas del dominio)."
+      },
+      "fields": [
+        {
+          "key": "recipient",
+          "type": "string",
+          "label": {
+            "en": "Recipient",
+            "fr": "Destinataire",
+            "de": "Empfänger",
+            "es": "Destinatario"
+          },
+          "description": {
+            "en": "Only this address. Leave empty for any recipient.",
+            "fr": "Uniquement cette adresse. Laissez vide pour tous les destinataires.",
+            "de": "Nur diese Adresse. Leer lassen für alle Empfänger.",
+            "es": "Solo esta dirección. Déjelo vacío para cualquier destinatario."
+          },
+          "placeholder": {
+            "en": "you@example.com",
+            "fr": "vous@exemple.fr",
+            "de": "du@beispiel.de",
+            "es": "usted@ejemplo.es"
+          }
+        },
+        {
+          "key": "tag",
+          "type": "string",
+          "label": {
+            "en": "Tag",
+            "fr": "Étiquette",
+            "de": "Tag",
+            "es": "Etiqueta"
+          },
+          "description": {
+            "en": "Only emails carrying this Mailgun tag (the first one). Leave empty for any.",
+            "fr": "Uniquement les e-mails portant cette étiquette Mailgun (la première). Laissez vide pour tous.",
+            "de": "Nur E-Mails mit diesem Mailgun-Tag (dem ersten). Leer lassen für alle.",
+            "es": "Solo los correos con esta etiqueta de Mailgun (la primera). Déjelo vacío para todos."
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "recipient",
+          "type": "string",
+          "label": {
+            "en": "Recipient",
+            "fr": "Destinataire",
+            "de": "Empfänger",
+            "es": "Destinatario"
+          }
+        },
+        {
+          "key": "subject",
+          "type": "string",
+          "label": {
+            "en": "Subject",
+            "fr": "Objet",
+            "de": "Betreff",
+            "es": "Asunto"
+          }
+        },
+        {
+          "key": "tag",
+          "type": "string",
+          "label": {
+            "en": "Tag",
+            "fr": "Étiquette",
+            "de": "Tag",
+            "es": "Etiqueta"
+          }
+        },
+        {
+          "key": "message_id",
+          "type": "string",
+          "label": {
+            "en": "Message ID",
+            "fr": "ID du message",
+            "de": "Nachrichten-ID",
+            "es": "ID del mensaje"
+          }
+        }
+      ]
+    },
+    {
+      "key": "email_clicked",
+      "label": {
+        "en": "A link is clicked",
+        "fr": "Un lien est cliqué",
+        "de": "Ein Link wird geklickt",
+        "es": "Se pulsa un enlace"
+      },
+      "description": {
+        "en": "The recipient clicked a link of an email (needs click tracking on the domain).",
+        "fr": "Le destinataire a cliqué un lien d'un e-mail (demande le suivi des clics sur le domaine).",
+        "de": "Der Empfänger hat einen Link einer E-Mail geklickt (braucht das Klick-Tracking der Domain).",
+        "es": "El destinatario pulsó un enlace de un correo (necesita el seguimiento de clics del dominio)."
+      },
+      "fields": [
+        {
+          "key": "recipient",
+          "type": "string",
+          "label": {
+            "en": "Recipient",
+            "fr": "Destinataire",
+            "de": "Empfänger",
+            "es": "Destinatario"
+          },
+          "description": {
+            "en": "Only this address. Leave empty for any recipient.",
+            "fr": "Uniquement cette adresse. Laissez vide pour tous les destinataires.",
+            "de": "Nur diese Adresse. Leer lassen für alle Empfänger.",
+            "es": "Solo esta dirección. Déjelo vacío para cualquier destinatario."
+          },
+          "placeholder": {
+            "en": "you@example.com",
+            "fr": "vous@exemple.fr",
+            "de": "du@beispiel.de",
+            "es": "usted@ejemplo.es"
+          }
+        },
+        {
+          "key": "tag",
+          "type": "string",
+          "label": {
+            "en": "Tag",
+            "fr": "Étiquette",
+            "de": "Tag",
+            "es": "Etiqueta"
+          },
+          "description": {
+            "en": "Only emails carrying this Mailgun tag (the first one). Leave empty for any.",
+            "fr": "Uniquement les e-mails portant cette étiquette Mailgun (la première). Laissez vide pour tous.",
+            "de": "Nur E-Mails mit diesem Mailgun-Tag (dem ersten). Leer lassen für alle.",
+            "es": "Solo los correos con esta etiqueta de Mailgun (la primera). Déjelo vacío para todos."
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "recipient",
+          "type": "string",
+          "label": {
+            "en": "Recipient",
+            "fr": "Destinataire",
+            "de": "Empfänger",
+            "es": "Destinatario"
+          }
+        },
+        {
+          "key": "subject",
+          "type": "string",
+          "label": {
+            "en": "Subject",
+            "fr": "Objet",
+            "de": "Betreff",
+            "es": "Asunto"
+          }
+        },
+        {
+          "key": "tag",
+          "type": "string",
+          "label": {
+            "en": "Tag",
+            "fr": "Étiquette",
+            "de": "Tag",
+            "es": "Etiqueta"
+          }
+        },
+        {
+          "key": "message_id",
+          "type": "string",
+          "label": {
+            "en": "Message ID",
+            "fr": "ID du message",
+            "de": "Nachrichten-ID",
+            "es": "ID del mensaje"
+          }
+        },
+        {
+          "key": "url",
+          "type": "string",
+          "label": {
+            "en": "Link clicked",
+            "fr": "Lien cliqué",
+            "de": "Geklickter Link",
+            "es": "Enlace pulsado"
+          }
+        }
+      ]
+    },
+    {
+      "key": "email_complained",
+      "label": {
+        "en": "An email is reported as spam",
+        "fr": "Un e-mail est signalé spam",
+        "de": "E-Mail als Spam gemeldet",
+        "es": "Correo marcado como spam"
+      },
+      "description": {
+        "en": "The recipient marked an email as spam.",
+        "fr": "Le destinataire a marqué un e-mail comme spam.",
+        "de": "Der Empfänger hat eine E-Mail als Spam markiert.",
+        "es": "El destinatario marcó un correo como spam."
+      },
+      "fields": [
+        {
+          "key": "recipient",
+          "type": "string",
+          "label": {
+            "en": "Recipient",
+            "fr": "Destinataire",
+            "de": "Empfänger",
+            "es": "Destinatario"
+          },
+          "description": {
+            "en": "Only this address. Leave empty for any recipient.",
+            "fr": "Uniquement cette adresse. Laissez vide pour tous les destinataires.",
+            "de": "Nur diese Adresse. Leer lassen für alle Empfänger.",
+            "es": "Solo esta dirección. Déjelo vacío para cualquier destinatario."
+          },
+          "placeholder": {
+            "en": "you@example.com",
+            "fr": "vous@exemple.fr",
+            "de": "du@beispiel.de",
+            "es": "usted@ejemplo.es"
+          }
+        },
+        {
+          "key": "tag",
+          "type": "string",
+          "label": {
+            "en": "Tag",
+            "fr": "Étiquette",
+            "de": "Tag",
+            "es": "Etiqueta"
+          },
+          "description": {
+            "en": "Only emails carrying this Mailgun tag (the first one). Leave empty for any.",
+            "fr": "Uniquement les e-mails portant cette étiquette Mailgun (la première). Laissez vide pour tous.",
+            "de": "Nur E-Mails mit diesem Mailgun-Tag (dem ersten). Leer lassen für alle.",
+            "es": "Solo los correos con esta etiqueta de Mailgun (la primera). Déjelo vacío para todos."
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "recipient",
+          "type": "string",
+          "label": {
+            "en": "Recipient",
+            "fr": "Destinataire",
+            "de": "Empfänger",
+            "es": "Destinatario"
+          }
+        },
+        {
+          "key": "subject",
+          "type": "string",
+          "label": {
+            "en": "Subject",
+            "fr": "Objet",
+            "de": "Betreff",
+            "es": "Asunto"
+          }
+        },
+        {
+          "key": "tag",
+          "type": "string",
+          "label": {
+            "en": "Tag",
+            "fr": "Étiquette",
+            "de": "Tag",
+            "es": "Etiqueta"
+          }
+        },
+        {
+          "key": "message_id",
+          "type": "string",
+          "label": {
+            "en": "Message ID",
+            "fr": "ID du message",
+            "de": "Nachrichten-ID",
+            "es": "ID del mensaje"
+          }
+        }
+      ]
+    },
+    {
+      "key": "email_unsubscribed",
+      "label": {
+        "en": "A recipient unsubscribes",
+        "fr": "Un destinataire se désabonne",
+        "de": "Ein Empfänger meldet sich ab",
+        "es": "Un destinatario se da de baja"
+      },
+      "description": {
+        "en": "The recipient used the unsubscribe link of an email.",
+        "fr": "Le destinataire a utilisé le lien de désabonnement d'un e-mail.",
+        "de": "Der Empfänger hat den Abmeldelink einer E-Mail benutzt.",
+        "es": "El destinatario usó el enlace de baja de un correo."
+      },
+      "fields": [
+        {
+          "key": "recipient",
+          "type": "string",
+          "label": {
+            "en": "Recipient",
+            "fr": "Destinataire",
+            "de": "Empfänger",
+            "es": "Destinatario"
+          },
+          "description": {
+            "en": "Only this address. Leave empty for any recipient.",
+            "fr": "Uniquement cette adresse. Laissez vide pour tous les destinataires.",
+            "de": "Nur diese Adresse. Leer lassen für alle Empfänger.",
+            "es": "Solo esta dirección. Déjelo vacío para cualquier destinatario."
+          },
+          "placeholder": {
+            "en": "you@example.com",
+            "fr": "vous@exemple.fr",
+            "de": "du@beispiel.de",
+            "es": "usted@ejemplo.es"
+          }
+        },
+        {
+          "key": "tag",
+          "type": "string",
+          "label": {
+            "en": "Tag",
+            "fr": "Étiquette",
+            "de": "Tag",
+            "es": "Etiqueta"
+          },
+          "description": {
+            "en": "Only emails carrying this Mailgun tag (the first one). Leave empty for any.",
+            "fr": "Uniquement les e-mails portant cette étiquette Mailgun (la première). Laissez vide pour tous.",
+            "de": "Nur E-Mails mit diesem Mailgun-Tag (dem ersten). Leer lassen für alle.",
+            "es": "Solo los correos con esta etiqueta de Mailgun (la primera). Déjelo vacío para todos."
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "recipient",
+          "type": "string",
+          "label": {
+            "en": "Recipient",
+            "fr": "Destinataire",
+            "de": "Empfänger",
+            "es": "Destinatario"
+          }
+        },
+        {
+          "key": "subject",
+          "type": "string",
+          "label": {
+            "en": "Subject",
+            "fr": "Objet",
+            "de": "Betreff",
+            "es": "Asunto"
+          }
+        },
+        {
+          "key": "tag",
+          "type": "string",
+          "label": {
+            "en": "Tag",
+            "fr": "Étiquette",
+            "de": "Tag",
+            "es": "Etiqueta"
+          }
+        },
+        {
+          "key": "message_id",
+          "type": "string",
+          "label": {
+            "en": "Message ID",
+            "fr": "ID du message",
+            "de": "Nachrichten-ID",
+            "es": "ID del mensaje"
+          }
+        }
+      ]
+    }
+  ],
+  "scene_actions": [
+    {
+      "key": "send_email",
+      "label": {
+        "en": "Send an email",
+        "fr": "Envoyer un e-mail",
+        "de": "E-Mail senden",
+        "es": "Enviar un correo"
+      },
+      "description": {
+        "en": "Send an email through Mailgun. Scene variables can be used in every field.",
+        "fr": "Envoie un e-mail via Mailgun. Les variables de scène sont utilisables dans chaque champ.",
+        "de": "Sendet eine E-Mail über Mailgun. Szenenvariablen können in jedem Feld verwendet werden.",
+        "es": "Envía un correo a través de Mailgun. Las variables de escena se pueden usar en cada campo."
+      },
+      "timeout_seconds": 30,
+      "fields": [
+        {
+          "key": "to",
+          "type": "string",
+          "label": {
+            "en": "To",
+            "fr": "Destinataires",
+            "de": "An",
+            "es": "Para"
+          },
+          "description": {
+            "en": "One or more addresses, separated by commas.",
+            "fr": "Une ou plusieurs adresses, séparées par des virgules.",
+            "de": "Eine oder mehrere Adressen, durch Kommas getrennt.",
+            "es": "Una o varias direcciones, separadas por comas."
+          },
+          "placeholder": {
+            "en": "you@example.com",
+            "fr": "vous@exemple.fr",
+            "de": "du@beispiel.de",
+            "es": "usted@ejemplo.es"
+          },
+          "required": true
+        },
+        {
+          "key": "subject",
+          "type": "string",
+          "label": {
+            "en": "Subject",
+            "fr": "Objet",
+            "de": "Betreff",
+            "es": "Asunto"
+          },
+          "required": true
+        },
+        {
+          "key": "body",
+          "type": "string",
+          "label": {
+            "en": "Message",
+            "fr": "Message",
+            "de": "Nachricht",
+            "es": "Mensaje"
+          },
+          "required": true
+        },
+        {
+          "key": "cc",
+          "type": "string",
+          "label": {
+            "en": "Cc",
+            "fr": "Copie (Cc)",
+            "de": "Kopie (Cc)",
+            "es": "Copia (Cc)"
+          },
+          "required": false
+        },
+        {
+          "key": "bcc",
+          "type": "string",
+          "label": {
+            "en": "Bcc",
+            "fr": "Copie cachée (Cci)",
+            "de": "Blindkopie (Bcc)",
+            "es": "Copia oculta (Cco)"
+          },
+          "required": false
+        },
+        {
+          "key": "reply_to",
+          "type": "string",
+          "label": {
+            "en": "Reply to",
+            "fr": "Répondre à",
+            "de": "Antwort an",
+            "es": "Responder a"
+          },
+          "required": false
+        },
+        {
+          "key": "tag",
+          "type": "string",
+          "label": {
+            "en": "Mailgun tags",
+            "fr": "Étiquettes Mailgun",
+            "de": "Mailgun-Tags",
+            "es": "Etiquetas de Mailgun"
+          },
+          "description": {
+            "en": "Up to 3, separated by commas. They sort the statistics and filter the triggers.",
+            "fr": "Jusqu'à 3, séparées par des virgules. Elles trient les statistiques et filtrent les déclencheurs.",
+            "de": "Bis zu 3, durch Kommas getrennt. Sie ordnen die Statistiken und filtern die Auslöser.",
+            "es": "Hasta 3, separadas por comas. Ordenan las estadísticas y filtran los disparadores."
+          },
+          "required": false
+        }
+      ],
+      "outputs": [
+        {
+          "key": "sent",
+          "type": "boolean",
+          "label": {
+            "en": "Email sent",
+            "fr": "E-mail envoyé",
+            "de": "E-Mail gesendet",
+            "es": "Correo enviado"
+          }
+        },
+        {
+          "key": "message_id",
+          "type": "string",
+          "label": {
+            "en": "Message ID",
+            "fr": "ID du message",
+            "de": "Nachrichten-ID",
+            "es": "ID del mensaje"
+          }
+        },
+        {
+          "key": "error",
+          "type": "string",
+          "label": {
+            "en": "Error",
+            "fr": "Erreur",
+            "de": "Fehler",
+            "es": "Error"
+          }
+        }
+      ]
+    }
+  ],
+  "widgets": [
+    {
+      "key": "activity",
+      "label": {
+        "en": "Mailgun activity",
+        "fr": "Activité Mailgun",
+        "de": "Mailgun-Aktivität",
+        "es": "Actividad de Mailgun"
+      },
+      "description": {
+        "en": "Emails sent, delivered, failed and opened, domain and webhook status.",
+        "fr": "E-mails envoyés, délivrés, en échec et ouverts, état du domaine et des webhooks.",
+        "de": "Gesendete, zugestellte, fehlgeschlagene und geöffnete E-Mails, Domain- und Webhook-Status.",
+        "es": "Correos enviados, entregados, fallidos y abiertos, estado del dominio y de los webhooks."
+      },
+      "icon": "mail",
+      "settings": [
+        {
+          "key": "period",
+          "type": "select",
+          "label": {
+            "en": "Period",
+            "fr": "Période",
+            "de": "Zeitraum",
+            "es": "Periodo"
+          },
+          "required": false,
+          "default": "7d",
+          "options": [
+            {
+              "value": "1d",
+              "label": {
+                "en": "Last 24 hours",
+                "fr": "Dernières 24 heures",
+                "de": "Letzte 24 Stunden",
+                "es": "Últimas 24 horas"
+              }
+            },
+            {
+              "value": "7d",
+              "label": {
+                "en": "Last 7 days",
+                "fr": "7 derniers jours",
+                "de": "Letzte 7 Tage",
+                "es": "Últimos 7 días"
+              }
+            },
+            {
+              "value": "30d",
+              "label": {
+                "en": "Last 30 days",
+                "fr": "30 derniers jours",
+                "de": "Letzte 30 Tage",
+                "es": "Últimos 30 días"
+              }
+            }
+          ]
+        }
+      ],
+      "action_timeout_seconds": 30
+    },
+    {
+      "key": "events",
+      "label": {
+        "en": "Mailgun events",
+        "fr": "Événements Mailgun",
+        "de": "Mailgun-Ereignisse",
+        "es": "Eventos de Mailgun"
+      },
+      "description": {
+        "en": "The last delivery events pushed by Mailgun (needs Gladys Plus).",
+        "fr": "Les derniers événements de livraison envoyés par Mailgun (demande Gladys Plus).",
+        "de": "Die letzten Zustellereignisse von Mailgun (braucht Gladys Plus).",
+        "es": "Los últimos eventos de entrega enviados por Mailgun (necesita Gladys Plus)."
+      },
+      "icon": "inbox",
+      "settings": [
+        {
+          "key": "count",
+          "type": "number",
+          "label": {
+            "en": "Events shown",
+            "fr": "Événements affichés",
+            "de": "Angezeigte Ereignisse",
+            "es": "Eventos mostrados"
+          },
+          "required": false,
+          "default": 5,
+          "min": 1,
+          "max": 8
+        },
+        {
+          "key": "filter",
+          "type": "select",
+          "label": {
+            "en": "Show",
+            "fr": "Afficher",
+            "de": "Anzeigen",
+            "es": "Mostrar"
+          },
+          "required": false,
+          "default": "all",
+          "options": [
+            {
+              "value": "all",
+              "label": {
+                "en": "All events",
+                "fr": "Tous les événements",
+                "de": "Alle Ereignisse",
+                "es": "Todos los eventos"
+              }
+            },
+            {
+              "value": "problems",
+              "label": {
+                "en": "Problems only",
+                "fr": "Problèmes seulement",
+                "de": "Nur Probleme",
+                "es": "Solo problemas"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
