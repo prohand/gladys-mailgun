@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [0.0.1] - 2026-11-15
+
 ### Added
 
 - Mailgun notification channel: each Gladys user enters their email address and receives the
@@ -31,4 +33,5 @@ the notes of the version's GitHub Release.
   multi-arch image build, GitHub Releases, Dependabot.
 - `SECURITY.md` and `CLAUDE.md`.
 
-[Unreleased]: https://github.com/prohand/gladys-mailgun/commits/main
+[Unreleased]: https://github.com/prohand/gladys-mailgun/compare/v0.0.1...HEAD
+[0.0.1]: https://github.com/prohand/gladys-mailgun/releases/tag/v0.0.1
