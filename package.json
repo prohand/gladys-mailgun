@@ -1,6 +1,6 @@
 {
   "name": "gladys-mailgun",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "description": "Gladys Assistant external integration for Mailgun: email notifications, scene triggers on delivery events, dashboard widgets.",
   "type": "module",
